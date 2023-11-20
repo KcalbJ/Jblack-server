@@ -40,3 +40,15 @@ describe("GET /api/topics ", () => {
       });
   });
 });
+
+describe("GET /api", () => {
+  test("responds with accurate JSON object", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        const endpointsCompare = require("../endpoints.json");
+        expect(body.endpoints).toEqual(endpointsCompare);
+      });
+  });
+});
