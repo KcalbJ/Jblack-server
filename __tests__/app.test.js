@@ -214,7 +214,6 @@ describe("POST /api/articles/:article_id/comments", () => {
 
         const comments  = body;
         
-        console.log(comments)
         expect(comments).toEqual("This is a great comment!");
       });
   });
