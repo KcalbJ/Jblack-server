@@ -210,10 +210,9 @@ describe("POST /api/articles/:article_id/comments", () => {
       .post("/api/articles/5/comments")
       .send(newComment)
       .expect(201)
-      .then(({ body} ) => {
+      .then(({ body }) => {
+        const comments = body;
 
-        const comments  = body;
-        
         expect(comments).toEqual("This is a great comment!");
       });
   });
@@ -232,27 +231,109 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
   test("responds with 400 and equest body must include username and body properties if not given a user name", () => {
-    const newComment = {body: 'hello world'};
+    const newComment = { body: "hello world" };
 
     return request(app)
       .post("/api/articles/4/comments")
       .send(newComment)
       .expect(400)
-      .then(( {body} ) => {
-        expect(body.msg).toBe('request body must include username and body properties');
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          "request body must include username and body properties"
+        );
       });
   });
 
   test("responds with 404 and User not found if user does not exist", () => {
-    const newComment = { username: 'Bob', body: 'hello world' };
-  
+    const newComment = { username: "Bob", body: "hello world" };
+
     return request(app)
       .post("/api/articles/4/comments")
       .send(newComment)
       .expect(404)
       .then(({ body }) => {
-        console.log(body);
-        expect(body.msg).toBe('User not found');
+        expect(body.msg).toBe("User not found");
+      });
+  });
+  test("responds with 400 and message bad request, when given an id that isnt a number", () => {
+    const newComment = {
+      username: "rogersop",
+      body: "This is a great comment!",
+    };
+    return request(app)
+      .post("/api/articles/apples/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});
+
+describe("PATCH /api/articles/:article_id/comments", () => {
+  test("responds with 200 and the updated article when given a valid article id and inc_votes", () => {
+    const newVotes = { inc_votes: 10 };
+    const articleToCompare = {
+      article_id: 1,
+      title: "Living in the shadow of a great man",
+      topic: "mitch",
+      author: "butter_bridge",
+      body: "I find this existence challenging",
+      created_at: "2020-07-09T20:11:00.000Z",
+      votes: 110,
+      article_img_url:
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+    };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(newVotes)
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article).toEqual(articleToCompare);
+      });
+  });
+
+  test("responds with 200 and the updated article when given a valid article id and inc_votes with a negative value", () => {
+    const newVotes = { inc_votes: -20 };
+    const articleToCompare = {
+      article_id: 1,
+      title: "Living in the shadow of a great man",
+      topic: "mitch",
+      author: "butter_bridge",
+      body: "I find this existence challenging",
+      created_at: "2020-07-09T20:11:00.000Z",
+      votes: 80,
+      article_img_url:
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+    };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(newVotes)
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article).toEqual(articleToCompare);
+      });
+  });
+  test("responds with 404 and message article does not exist, when article by id doesnt exist", () => {
+    const newVotes = { inc_votes: 10 };
+    return request(app)
+      .patch("/api/articles/9000")
+      .send(newVotes)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("article does not exist");
+      });
+  });
+  test("responds with 400 and message bad request, when given an id that isnt a number ", () => {
+    const newVotes = { inc_votes: 10 };
+    return request(app)
+      .patch("/api/articles/gee")
+      .send(newVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
       });
   });
 });
