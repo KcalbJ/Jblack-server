@@ -4,6 +4,8 @@ const seed = require("../db/seeds/seed");
 const data = require("../db/data/test-data");
 
 const db = require("../db/connection");
+const articles = require("../db/data/test-data/articles");
+require("jest-sorted");
 
 beforeEach(() => {
   return seed(data);
@@ -89,6 +91,30 @@ describe("GET /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("bad request");
+      });
+  });
+});
+
+describe("GET /api/articles ", () => {
+  test("responds with 200 and all articles in descending order with comment counts", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles.length).toBe(13);
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(Number),
+          });
+          expect(articles).toBeSortedBy("created_at", { descending: true });
+        });
       });
   });
 });
