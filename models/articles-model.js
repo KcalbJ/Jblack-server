@@ -19,15 +19,40 @@ exports.selectArticleById = (article_id) => {
 
 exports.selectArticles = () => {
   const queryString = `
-    SELECT
-      articles.*,
-      CAST(COUNT(comments.comment_id)AS INT) AS comment_count
-    FROM articles
-    LEFT JOIN comments ON articles.article_id = comments.article_id
-    GROUP BY articles.article_id
-    ORDER BY created_at DESC
-  `;
-  return db.query(queryString).then(({ rows }) => {
-    return rows;
+      SELECT
+        articles.article_id,
+        articles.title,
+        articles.author,
+        articles.created_at,
+        articles.topic,
+        articles.votes,
+        CAST(COUNT(comments.comment_id) AS INT) AS comment_count
+      FROM articles
+      LEFT JOIN comments ON articles.article_id = comments.article_id
+      GROUP BY articles.article_id
+      ORDER BY created_at DESC
+    `;
+  return db.query(queryString).then(({ rows }) => rows);
+};
+
+exports.updateArticleVotes = (article_id, inc_votes) => {
+
+  const queryString = `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`;
+  if (!inc_votes) {
+    return Promise.reject({
+      status: 400,
+      msg: 'Bad request: inc_votes is required'
+    });
+  } else if (typeof inc_votes !== 'number') {
+    return Promise.reject({
+      status: 400,
+      msg: 'Bad request: inc_votes value must be number'
+    });
+  }
+
+  return db.query(queryString, [inc_votes, article_id]).then(({ rows }) => {
+    const updatedArticle = rows[0];
+
+    return updatedArticle;
   });
 };
