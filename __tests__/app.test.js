@@ -361,3 +361,42 @@ describe("PATCH /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+
+
+describe("DELETE /api/comments/:comment_id", () => {
+    test("responds with 204 and an empty response", () => {
+      
+      return request(app)
+        .delete("/api/comments/1")
+        .expect(204)
+        .then(({ body }) => {
+       
+          expect(body).toEqual({});
+        });
+    });
+
+
+ test("responds with 404 if comment id does not exist", () => {
+      
+      return request(app)
+        .delete("/api/comments/9000")
+        .expect(404)
+        .then(({ body }) => {
+       
+          expect(body.msg).toBe('comment does not exist');
+        });
+    });
+ 
+ test("responds with 40O if id is not a number", () => {
+      
+      return request(app)
+        .delete("/api/comments/gjdhg")
+        .expect(400)
+        .then(({ body }) => {
+       
+          expect(body.msg).toBe('bad request');
+        });
+    });
+
+});

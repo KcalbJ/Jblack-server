@@ -2,6 +2,8 @@ const { selectArticleById } = require("../models/articles-model");
 const {
   selectCommentsByArticleId,
   insertCommentByArticleId,
+  selectCommentById,
+  deleteCommentById,
 } = require("../models/comments-model");
 const { userExists } = require("../models/users-models");
 
@@ -32,3 +34,17 @@ exports.postCommentByArticleId = (req, res, next) => {
     })
     .catch(next);
 };
+
+
+exports.deleteComment = (req, res, next) => {
+  const { comment_id } = req.params;
+
+  Promise.all([
+    selectCommentById(comment_id),
+    deleteCommentById(comment_id),
+  ])
+    .then(([existingComment, deletedComment]) => {
+    res.status(204).send();
+    })
+    .catch(next);
+}

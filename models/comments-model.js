@@ -30,3 +30,33 @@ exports.selectCommentsByArticleId = (article_id) => {
       return comment;
     });
 };
+
+exports.selectCommentById = (comment_id) => {
+  const queryString = 'SELECT * FROM comments WHERE comment_id = $1';
+
+  return db
+    .query(queryString, [comment_id])
+    .then(({ rows }) => {
+      const commentExists = rows[0];
+  if (!commentExists) {
+        return Promise.reject({
+          status: 404,
+          msg: 'comment does not exist',
+        });
+      }
+      return commentExists;
+    });
+};
+
+
+exports.deleteCommentById = (comment_id) => {
+  const queryString = 'DELETE FROM comments WHERE comment_id = $1';
+
+  return db
+    .query(queryString, [comment_id])
+    .then(({ rows }) => {
+      const deletedComment = rows[0];
+
+      return deletedComment;
+    });
+};
