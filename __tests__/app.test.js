@@ -118,3 +118,88 @@ describe("GET /api/articles ", () => {
       });
   });
 });
+
+
+describe("GET /api/articles/:article_id/comments", () => {
+    test("responds with 200 and specific comment when given id", () => {
+      const commentToCompare =  [
+        {
+          comment_id: 16,
+          body: 'This is a bad article name',
+          article_id: 6,
+          author: 'butter_bridge',
+          votes: 1,
+          created_at: '2020-10-11T15:23:00.000Z'
+        }
+      ]
+  ;
+
+      return request(app)
+        .get("/api/articles/6/comments")
+        .expect(200)
+        .then(({ body }) => {
+            
+          const { comments } = body;
+        
+          expect(comments).toEqual(commentToCompare);
+        });
+    });
+
+    test("responds with 200 and specific comments when given id ordered by newest created first", () => {
+      const commentsToCompare =  [
+        {
+          comment_id: 14,
+          body: 'What do you see? I have no idea where this will lead us. This place I speak of, is known as the Black Lodge.',
+          article_id: 5,
+          author: 'icellusedkars',
+          votes: 16,
+          created_at: '2020-06-09T05:00:00.000Z'
+        },
+        {
+          comment_id: 15,
+          body: "I am 100% sure that we're not completely sure.",
+          article_id: 5,
+          author: 'butter_bridge',
+          votes: 1,
+          created_at: '2020-11-24T00:08:00.000Z'
+        }
+      ];
+
+      return request(app)
+        .get("/api/articles/5/comments")
+        .expect(200)
+        .then(({ body }) => {
+          const { comments } = body;
+          expect(comments).toEqual(commentsToCompare);
+          expect(comments).toBeSortedBy("created_at");
+        });
+    });
+
+    test("responds with 200 and an empy array when there are no comments", () => {
+      return request(app)
+        .get("/api/articles/7/comments")
+        .expect(200)
+        .then(({ body }) => {
+          const { comments } = body;
+          expect(comments).toEqual([]);
+        });
+    });
+
+    test("responds with 404 and message article does not exist, when article by id doesnt exist", () => {
+      return request(app)
+        .get("/api/articles/9000/comments")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("article does not exist");
+        });
+    });
+
+    test("responds with 400 and message bad request, when given an id that isnt a number", () => {
+      return request(app)
+        .get("/api/articles/apples/comments")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("bad request");
+        });
+    });
+  });
