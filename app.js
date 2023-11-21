@@ -4,6 +4,7 @@ const { getAllTopics } = require('./controllers/topics-controller');
 const { handle404, handleCustomErrors, handleServerErrors, handlePsqlErrors } = require('./errors/error-handlers');
 const { getEndpoints } = require('./controllers/endpoint-controller');
 const { getArticleById, getAllArticles } = require('./controllers/ariticles-controller');
+const { getCommentsByArticleId } = require('./controllers/comments-controller');
 
 
 
@@ -14,7 +15,7 @@ app.get('/api/topics', getAllTopics)
 app.get('/api', getEndpoints)
 app.get('/api/articles/:article_id', getArticleById)
 app.get('/api/articles', getAllArticles)
-
+app.get('/api/articles/:article_id/comments' ,getCommentsByArticleId )
 app.all("*", handle404);
 app.use(handlePsqlErrors);
 app.use(handleCustomErrors);
