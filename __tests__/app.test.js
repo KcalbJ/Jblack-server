@@ -316,6 +316,30 @@ describe("PATCH /api/articles/:article_id/comments", () => {
         expect(article).toEqual(articleToCompare);
       });
   });
+  test("responds with 400 and Bad request: inc_votes is required with no inc_votes key", () => {
+    const newVotes = {incc_votes: 3};
+    
+    return request(app)
+      .patch("/api/articles/1")
+      .send(newVotes)
+      .expect(400)
+      .then(({ body }) => {
+        
+        expect(body.msg).toBe('Bad request: inc_votes is required');
+      });
+  });
+  test("responds with 400 and 'Bad request: inc_votes value must be number when value of inc_votes is not a number", () => {
+    const newVotes = {inc_votes: "3"};
+    
+    return request(app)
+      .patch("/api/articles/1")
+      .send(newVotes)
+      .expect(400)
+      .then(({ body }) => {
+        
+        expect(body.msg).toBe('Bad request: inc_votes value must be number');
+      });
+  });
   test("responds with 404 and message article does not exist, when article by id doesnt exist", () => {
     const newVotes = { inc_votes: 10 };
     return request(app)

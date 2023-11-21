@@ -36,7 +36,19 @@ exports.selectArticles = () => {
 };
 
 exports.updateArticleVotes = (article_id, inc_votes) => {
+
   const queryString = `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`;
+  if (!inc_votes) {
+    return Promise.reject({
+      status: 400,
+      msg: 'Bad request: inc_votes is required'
+    });
+  } else if (typeof inc_votes !== 'number') {
+    return Promise.reject({
+      status: 400,
+      msg: 'Bad request: inc_votes value must be number'
+    });
+  }
 
   return db.query(queryString, [inc_votes, article_id]).then(({ rows }) => {
     const updatedArticle = rows[0];
