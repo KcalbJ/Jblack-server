@@ -50,7 +50,7 @@ exports.selectCommentById = (comment_id) => {
 
 
 exports.deleteCommentById = (comment_id) => {
-  const queryString = 'DELETE FROM comments WHERE comment_id = $1';
+  const queryString = 'DELETE FROM comments WHERE comment_id = $1 RETURNING *;';
 
   return db
     .query(queryString, [comment_id])
