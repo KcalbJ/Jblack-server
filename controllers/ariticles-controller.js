@@ -16,25 +16,16 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  const { topic } = req.query;
+  const { topic, sort_by, order } = req.query
 
-  if (topic) {
-    Promise.all([
-      selectTopicByName(topic),
-      selectArticles(topic)
-    ])
-      .then(([topicResult, articles]) => {
-        res.status(200).send({ articles });
-      })
-      .catch(next);
-  } else {
-    selectArticles(topic)
+
+    selectArticles(topic,sort_by, order)
       .then((articles) => {
         res.status(200).send({ articles });
       })
       .catch(next);
   }
-};
+
 
 exports.patchArticleById = (req, res, next) => {
   const { article_id } = req.params;
