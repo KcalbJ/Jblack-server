@@ -10,7 +10,6 @@ exports.selectTopics = () => {
 
 exports.selectTopicByName = (topic) => {
   const queryString = `SELECT * FROM topics WHERE slug = $1`;
-  console.log(topic)
   return db.query(queryString, [topic])
     .then(({ rows }) => {
       if (rows.length === 0) {
