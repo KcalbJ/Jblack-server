@@ -139,13 +139,23 @@ describe("GET /api/articles ", () => {
         });
       });
   });
-  test("responds with 200 and and 0 articles if the topic doesnt exist", () => {
+  test("responds with 200 and 0 articles if the topic exists but doesnt have any  articles", () => {
     return request(app)
-      .get("/api/articles?topic=match")
+      .get("/api/articles?topic=paper")
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
         expect(articles.length).toBe(0);
+        
+      });
+  });
+  test("responds with 404 and 0 articles if the topic doesnt exist", () => {
+    return request(app)
+      .get("/api/articles?topic=carrots")
+      .expect(404)
+      .then(({ body }) => {
+        
+        expect(body.msg).toBe('Topic does not exist');
         
       });
   });

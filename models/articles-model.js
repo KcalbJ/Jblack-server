@@ -48,19 +48,17 @@ exports.selectArticles = (topic) => {
   return db.query(queryString, queryParams).then(({ rows }) => rows);
 };
 
-
 exports.updateArticleVotes = (article_id, inc_votes) => {
-
   const queryString = `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`;
   if (!inc_votes) {
     return Promise.reject({
       status: 400,
-      msg: 'Bad request: inc_votes is required'
+      msg: "Bad request: inc_votes is required",
     });
-  } else if (typeof inc_votes !== 'number') {
+  } else if (typeof inc_votes !== "number") {
     return Promise.reject({
       status: 400,
-      msg: 'Bad request: inc_votes value must be number'
+      msg: "Bad request: inc_votes value must be number",
     });
   }
 
