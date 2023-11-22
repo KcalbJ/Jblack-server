@@ -117,6 +117,48 @@ describe("GET /api/articles ", () => {
         });
       });
   });
+
+  test("responds with 200 and all articles filtered by the query topic", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles.length).toBe(12);
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: "mitch",
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(Number),
+          });
+          expect(articles).toBeSortedBy("created_at", { descending: true });
+        });
+      });
+  });
+  test("responds with 200 and 0 articles if the topic exists but doesnt have any  articles", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles.length).toBe(0);
+        
+      });
+  });
+  test("responds with 404 and 0 articles if the topic doesnt exist", () => {
+    return request(app)
+      .get("/api/articles?topic=carrots")
+      .expect(404)
+      .then(({ body }) => {
+        
+        expect(body.msg).toBe('Topic does not exist');
+        
+      });
+  });
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
@@ -317,27 +359,25 @@ describe("PATCH /api/articles/:article_id/comments", () => {
       });
   });
   test("responds with 400 and Bad request: inc_votes is required with no inc_votes key", () => {
-    const newVotes = {incc_votes: 3};
-    
+    const newVotes = { incc_votes: 3 };
+
     return request(app)
       .patch("/api/articles/1")
       .send(newVotes)
       .expect(400)
       .then(({ body }) => {
-        
-        expect(body.msg).toBe('Bad request: inc_votes is required');
+        expect(body.msg).toBe("Bad request: inc_votes is required");
       });
   });
   test("responds with 400 and 'Bad request: inc_votes value must be number when value of inc_votes is not a number", () => {
-    const newVotes = {inc_votes: "3"};
-    
+    const newVotes = { inc_votes: "3" };
+
     return request(app)
       .patch("/api/articles/1")
       .send(newVotes)
       .expect(400)
       .then(({ body }) => {
-        
-        expect(body.msg).toBe('Bad request: inc_votes value must be number');
+        expect(body.msg).toBe("Bad request: inc_votes value must be number");
       });
   });
   test("responds with 404 and message article does not exist, when article by id doesnt exist", () => {
@@ -362,71 +402,60 @@ describe("PATCH /api/articles/:article_id/comments", () => {
   });
 });
 
-
-
 describe("DELETE /api/comments/:comment_id", () => {
-    test("responds with 204 and an empty response", () => {
-      
-      return request(app)
-        .delete("/api/comments/1")
-        .expect(204)
-        .then(({ body }) => {
-       
-          expect(body).toEqual({});
-        });
-    });
+  test("responds with 204 and an empty response", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
 
+  test("responds with 404 if comment id does not exist", () => {
+    return request(app)
+      .delete("/api/comments/9000")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("comment does not exist");
+      });
+  });
 
- test("responds with 404 if comment id does not exist", () => {
-      
-      return request(app)
-        .delete("/api/comments/9000")
-        .expect(404)
-        .then(({ body }) => {
-       
-          expect(body.msg).toBe('comment does not exist');
-        });
-    });
- 
- test("responds with 40O if id is not a number", () => {
-      
-      return request(app)
-        .delete("/api/comments/gjdhg")
-        .expect(400)
-        .then(({ body }) => {
-       
-          expect(body.msg).toBe('bad request');
-        });
-    });
-
+  test("responds with 40O if id is not a number", () => {
+    return request(app)
+      .delete("/api/comments/gjdhg")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
 });
 
 describe("GET /api/users", () => {
-    test("responds with 200 and all users with username, name, and avatar_url properties", () => {
-      return request(app)
-        .get("/api/users")
-        .expect(200)
-        .then(({ body }) => {
-          const { users } = body;
-          expect(Array.isArray(users)).toBe(true);
-          expect(users.length).toBe(4);
-  
-          users.forEach((user) => {
-            expect(user).toMatchObject({
-              username: expect.any(String),
-              name: expect.any(String),
-              avatar_url: expect.any(String),
-            });
+  test("responds with 200 and all users with username, name, and avatar_url properties", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const { users } = body;
+        expect(Array.isArray(users)).toBe(true);
+        expect(users.length).toBe(4);
+
+        users.forEach((user) => {
+          expect(user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
           });
         });
-    });
-    test("responds with 404 not found if miss typed url", () => {
-        return request(app)
-          .get("/api/userss")
-          .expect(404)
-          .then(({ body }) => {
-            expect(body.msg).toBe('Not Found');
-            });
-          });
       });
-  
+  });
+  test("responds with 404 not found if miss typed url", () => {
+    return request(app)
+      .get("/api/userss")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not Found");
+      });
+  });
+});
