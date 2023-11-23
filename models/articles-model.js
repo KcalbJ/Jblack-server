@@ -1,5 +1,5 @@
 const db = require("../db/connection");
-const format = require("pg-format");
+const { checkExists } = require("../utils/utils");
 
 exports.selectArticleById = (article_id) => {
   const queryString = `
@@ -32,7 +32,32 @@ exports.selectArticleById = (article_id) => {
     return article;
   });
 };
-exports.selectArticles = (topic) => {
+
+
+
+exports.selectArticles = async (topic, sort_by = 'created_at', order = 'desc') => {
+  const validSortColumns = ['article_id', 'title', 'author', 'created_at', 'topic', 'votes'];
+
+  if (!validSortColumns.includes(sort_by)) {
+    return Promise.reject({
+      status: 400,
+      msg: 'Bad request parameter:  must be one of: article_id, title, author, created_at, topic, votes.'
+    });
+  }
+
+  if (order !== 'asc' && order !== 'desc') {
+    return Promise.reject({
+      status: 400,
+      msg: 'Bad request parameter: must be either "asc" or "desc".'
+    });
+  }
+
+  if (topic) {
+     await checkExists('topics', 'slug', topic);
+
+  }
+  
+  
   let queryString = `
     SELECT
       articles.article_id,
@@ -57,11 +82,12 @@ exports.selectArticles = (topic) => {
 
   queryString += `
     GROUP BY articles.article_id
-    ORDER BY created_at DESC
+    ORDER BY ${sort_by} ${order}
   `;
 
   return db.query(queryString, queryParams).then(({ rows }) => rows);
 };
+
 
 exports.updateArticleVotes = (article_id, inc_votes) => {
   const queryString = `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`;

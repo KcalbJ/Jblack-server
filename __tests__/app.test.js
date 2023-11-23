@@ -146,7 +146,6 @@ describe("GET /api/articles ", () => {
       .then(({ body }) => {
         const { articles } = body;
         expect(articles.length).toBe(0);
-        
       });
   });
   test("responds with 404 and 0 articles if the topic doesnt exist", () => {
@@ -154,9 +153,64 @@ describe("GET /api/articles ", () => {
       .get("/api/articles?topic=carrots")
       .expect(404)
       .then(({ body }) => {
-        
-        expect(body.msg).toBe('Topic does not exist');
-        
+        expect(body.msg).toBe("carrots does not exist");
+      });
+  });
+});
+
+describe("GET /api/articles QUERIES ", () => {
+  test("responds with 200 and all articles in descending order sorted by votes", () => {
+    return request(app)
+      .get("/api/articles/?sort_by=votes")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles.length).toBe(13);
+
+        expect(articles).toBeSortedBy("votes", { descending: true });
+      });
+  });
+  test("responds with 200 and all articles in descending order sorted by title", () => {
+    return request(app)
+      .get("/api/articles/?sort_by=title")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles.length).toBe(13);
+
+        expect(articles).toBeSortedBy("title", { descending: true });
+      });
+  });
+  test("responds with 200 and all articles in ascending order sorted by author", () => {
+    return request(app)
+      .get("/api/articles/?sort_by=author&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles.length).toBe(13);
+
+        expect(articles).toBeSortedBy("author", { descending: false });
+      });
+  });
+
+  test("responds with 400 and invalid sort parameter", () => {
+    return request(app)
+      .get("/api/articles/?sort_by=bob")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          'Bad request parameter:  must be one of: article_id, title, author, created_at, topic, votes.'
+        );
+      });
+  });
+  test("responds with 400 and invalid sort parameter", () => {
+    return request(app)
+      .get("/api/articles/?sort_by=author&order=bob")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          'Bad request parameter: must be either "asc" or "desc".'
+        );
       });
   });
 });
@@ -460,8 +514,6 @@ describe("GET /api/users", () => {
   });
 });
 
-
-
 describe("GET /api/articles/:article_id(comment_count)", () => {
   test("responds with 200 and specific article when given id and comment count", () => {
     const articleToCompare = {
@@ -474,7 +526,7 @@ describe("GET /api/articles/:article_id(comment_count)", () => {
       votes: 0,
       article_img_url:
         "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-        comment_count: 0,
+      comment_count: 0,
     };
     return request(app)
       .get("/api/articles/2")
