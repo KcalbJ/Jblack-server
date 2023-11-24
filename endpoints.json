@@ -1,16 +1,16 @@
 {
   "GET /api": {
-    "description": "serves up a json representation of all the available endpoints of the api"
+    "description": "Serves a JSON representation of all available endpoints of the API."
   },
   "GET /api/topics": {
-    "description": "serves an array of all topics",
+    "description": "Serves an array of all topics.",
     "queries": [],
     "exampleResponse": {
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles",
+    "description": "Serves an array of all articles. Users can also query by author, topic, sort_by, and order.",
     "queries": ["author", "topic", "sort_by", "order"],
     "exampleResponse": {
       "articles": [
@@ -26,9 +26,8 @@
       ]
     }
   },
-  
-  "GET /api/articles/:article:id": {
-    "description": "serves an object by using the article id searched for",
+  "GET /api/articles/:article_id": {
+    "description": "Serves an object containing the article ID searched for.",
     "exampleResponse": {
       "article_id": 1,
       "title": "Living in the shadow of a great man",
@@ -39,6 +38,84 @@
       "votes": 100,
       "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
     }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "Serves an array of objects containing comments for a particular article.",
+    "exampleResponse": [
+      {
+        "comment_id": 16,
+        "body": "This is a bad article name",
+        "votes": 1,
+        "author": "butter_bridge",
+        "article_id": 6,
+        "created_at": "2020-10-11T16:23:00.000Z"
+      }
+    ]
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "Allows a user to add a comment to a specific article. Required information includes a username and body. Returns the posted comment.",
+    "exampleResponse": { "comment": "my new comment" }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "Allows a user to alter the number of votes for an article.",
+    "exampleResponse": {
+      "article_id": 1,
+      "title": "Living in the shadow of a great man",
+      "topic": "mitch",
+      "author": "butter_bridge",
+      "body": "I find this existence challenging",
+      "created_at": "2020-07-09T21:11:00.000Z",
+      "votes": 10,
+      "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+    }
+  },
+  "GET /api/users": {
+    "description": "Serves all stored user data.",
+    "exampleResponse": [
+      {
+        "username": "butter_bridge",
+        "name": "jonny",
+        "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+      }
+    ]
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Allows a user to delete a comment. Returns status 204, indicating no content will be returned to the user."
+  },
+  "GET /api/articles?sort_by=x&&order=y": {
+    "description": "Allows the user to sort data by a specific column and provide an order.",
+    "queries": ["sort_by", "order"],
+    "exampleResponse": {
+      "article_id": 1,
+      "title": "Living in the shadow of a great man",
+      "topic": "mitch",
+      "author": "butter_bridge",
+      "body": "I find this existence challenging",
+      "created_at": "2020-07-09T21:11:00.000Z",
+      "votes": 100,
+      "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+      "comment_count": 11
+    }
+  },
+  "GET /api/users/:username": {
+    "description": "Serves user data for the specified username.",
+    "exampleResponse": {
+      "username": "butter_bridge",
+      "name": "jonny",
+      "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+    }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "Allows a user to increment or decrement votes for the specified comment_id. Returns the comment with the updated vote count.",
+    "exampleResponse": {
+      "comment_id": 1,
+      "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+      "votes": 16,
+      "author": "butter_bridge",
+      "article_id": 9,
+      "created_at": 1586179020000
+    }
   }
 }
+
 
