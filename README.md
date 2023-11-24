@@ -2,6 +2,13 @@
 
 
 
+[Link to Hosted Version](<https://nc-news-opvy.onrender.com/>)
+
+## Summary
+
+The Northcoders News API is a robust backend server designed to serve data for a news platform. It provides a variety of endpoints allowing users to interact with topics, articles, comments, and users. The API is built with Node.js and Express, using a PostgreSQL database to store and manage data. Users can retrieve information on topics, articles, comments, and users, as well as perform actions such as posting comments, voting on articles, and deleting comments.
+
+
 
 ## Getting Started
 
