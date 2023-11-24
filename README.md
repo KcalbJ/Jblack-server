@@ -67,6 +67,8 @@ The Northcoders News API is a robust backend server designed to serve data for a
 - **GET /api/topics**: Get all topics.
 - **GET /api/articles/:article_id**: Get an article by its ID.
 - **GET /api/articles**: Get all articles.
+- **GET /api/articles/:topic**: Get all articles by topic.
+- **GET /api/articles/?sort_by=QUERIE&order=asc/desc**: Get all articles and sort them by column and order them.
 - **PATCH /api/articles/:article_id**: Update an article's details.
 - **GET /api/articles/:article_id/comments**: Get comments for a specific article.
 - **POST /api/articles/:article_id/comments**: Post a new comment for an article.
