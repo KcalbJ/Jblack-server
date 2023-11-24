@@ -60,3 +60,25 @@ exports.deleteCommentById = (comment_id) => {
       return deletedComment;
     });
 };
+
+
+exports.updateCommentVotes = (comment_id, inc_votes) => {
+  const queryString = `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *`;
+
+  if (!inc_votes) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad request: inc_votes is required",
+    });
+  } else if (typeof inc_votes !== "number") {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad request: inc_votes value must be a number",
+    });
+  }
+
+  return db.query(queryString, [inc_votes, comment_id]).then(({ rows }) => {
+    const updatedComment = rows[0];
+    return updatedComment;
+  });
+};
