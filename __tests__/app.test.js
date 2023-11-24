@@ -568,3 +568,107 @@ describe("GET /api/users/:username", () => {
 
 
 });
+
+describe("PATCH /api/comments/:comment_id", () => {
+  test("responds with 200 and the updated comment when given a valid comment id and inc_votes", () => {
+    const newVotes = { inc_votes: 10 };
+    const commentToCompare = {
+      comment_id: 1,
+      body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+      article_id: 9,
+      author: 'butter_bridge',
+      votes: 26,
+      created_at: '2020-04-06T12:17:00.000Z'
+    }
+
+    return request(app)
+      .patch("/api/comments/1")
+      .send(newVotes)
+      .expect(200)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toEqual(commentToCompare);
+      });
+  });
+
+  test("responds with 200 and the updated comment when given a valid comment id and inc_votes with a negative value", () => {
+    const newVotes = { inc_votes: -5 };
+    const commentToCompare =  {
+      comment_id: 1,
+      body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+      article_id: 9,
+      author: 'butter_bridge',
+      votes: 11,
+      created_at: '2020-04-06T12:17:00.000Z'
+    }
+
+    return request(app)
+      .patch("/api/comments/1")
+      .send(newVotes)
+      .expect(200)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toEqual(commentToCompare);
+      });
+  });
+
+  test("responds with 400 and 'Bad request: inc_votes is required' with no inc_votes key", () => {
+    const newVotes = { incc_votes: 3 };
+
+    return request(app)
+      .patch("/api/comments/1")
+      .send(newVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request: inc_votes is required");
+      });
+  });
+
+  test("responds with 400 and 'Bad request: inc_votes value must be a number' when value of inc_votes is not a number", () => {
+    const newVotes = { inc_votes: "3" };
+
+    return request(app)
+      .patch("/api/comments/1")
+      .send(newVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request: inc_votes value must be a number");
+      });
+  });
+
+  test("responds with 404 and 'Comment not found' when given a non-existing comment id", () => {
+    const newVotes = { inc_votes: 10 };
+
+    return request(app)
+      .patch("/api/comments/1000")
+      .send(newVotes)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("comment does not exist");
+      });
+  });
+
+  test("responds with 400 and 'Bad request' when given an invalid comment id", () => {
+    const newVotes = { inc_votes: 10 };
+
+    return request(app)
+      .patch("/api/comments/invalid_id")
+      .send(newVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+
+  test("responds with 400 and 'Bad request' when given a comment id with invalid characters", () => {
+    const newVotes = { inc_votes: 10 };
+
+    return request(app)
+      .patch("/api/comments/!@#$%")
+      .send(newVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("bad request");
+      });
+  });
+});

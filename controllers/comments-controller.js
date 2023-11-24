@@ -4,6 +4,7 @@ const {
   insertCommentByArticleId,
   selectCommentById,
   deleteCommentById,
+  updateCommentVotes,
 } = require("../models/comments-model");
 const { userExists } = require("../models/users-models");
 
@@ -48,3 +49,18 @@ exports.deleteComment = (req, res, next) => {
     })
     .catch(next);
 }
+
+exports.patchCommentVotes = (req, res, next) => {
+  const { comment_id } = req.params;
+  const { inc_votes } = req.body;
+
+  Promise.all([
+    selectCommentById(comment_id),
+    updateCommentVotes(comment_id, inc_votes),
+  ])
+    .then(([commentExists, updatedComment]) => {
+      
+      res.status(200).send({ comment: updatedComment });
+    })
+    .catch(next);
+};
