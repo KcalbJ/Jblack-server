@@ -66,6 +66,8 @@ exports.selectArticles = async (topic, sort_by = 'created_at', order = 'desc') =
       articles.created_at,
       articles.topic,
       articles.votes,
+      articles.votes, 
+      articles.article_img_url, 
       CAST(COUNT(comments.comment_id) AS INT) AS comment_count
     FROM articles
     LEFT JOIN comments ON articles.article_id = comments.article_id
