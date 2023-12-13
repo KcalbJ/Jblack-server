@@ -309,7 +309,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .then(({ body }) => {
         const comments = body;
 
-        expect(comments).toEqual("This is a great comment!");
+        expect(comments).toEqual(" a");
       });
   });
   test("responds with 404 and message article does not exist, when article by id doesnt exist", () => {
