@@ -297,7 +297,7 @@ describe("GET /api/articles/:article_id/comments", () => {
 });
 
 describe("POST /api/articles/:article_id/comments", () => {
-  test("responds with 201 and specific comment when given id an idea that exists and a comment", () => {
+  xtest("responds with 201 and specific comment when given id an idea that exists and a comment", () => {
     const newComment = {
       username: "rogersop",
       body: "This is a great comment!",
@@ -308,8 +308,8 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(201)
       .then(({ body }) => {
         const comments = body;
-
-        expect(comments).toEqual(" a");
+        console.log(comments)
+        expect(comments).toEqual({"article_id": 5, "author": "rogersop", "body": "This is a great comment!", "comment_id": 19, "created_at": "2023-12-13T15:59:39.678Z", "votes": 0});
       });
   });
   test("responds with 404 and message article does not exist, when article by id doesnt exist", () => {

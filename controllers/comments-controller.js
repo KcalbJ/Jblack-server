@@ -31,7 +31,7 @@ exports.postCommentByArticleId = (req, res, next) => {
     insertCommentByArticleId(article_id, newComment),
   ])
     .then(([article, user, comment]) => {
-      res.status(201).json(comment.body);
+      res.status(201).json(comment);
     })
     .catch(next);
 };

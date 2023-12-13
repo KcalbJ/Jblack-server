@@ -26,7 +26,7 @@ exports.selectCommentsByArticleId = (article_id) => {
     return db
     .query(queryString, [article_id, newComment.username, newComment.body])
     .then(({ rows }) => {
-      const comment = rows
+      const comment = rows[0];
       return comment;
     });
 };
