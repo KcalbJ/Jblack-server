@@ -36,7 +36,7 @@ exports.selectArticleById = (article_id) => {
 
 
 exports.selectArticles = async (topic, sort_by = 'created_at', order = 'desc') => {
-  const validSortColumns = ['article_id', 'title', 'author', 'created_at', 'topic', 'votes'];
+  const validSortColumns = ['article_id', 'title', 'author', 'created_at', 'topic', 'votes','comment_count'];
 
   if (!validSortColumns.includes(sort_by)) {
     return Promise.reject({
@@ -65,7 +65,6 @@ exports.selectArticles = async (topic, sort_by = 'created_at', order = 'desc') =
       articles.author,
       articles.created_at,
       articles.topic,
-      articles.votes,
       articles.votes, 
       articles.article_img_url, 
       CAST(COUNT(comments.comment_id) AS INT) AS comment_count
